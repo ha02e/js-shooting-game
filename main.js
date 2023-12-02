@@ -10,6 +10,7 @@ canvas.height = 700;
 document.body.appendChild(canvas);
 
 let backgroundImage, spaceshipImage, bulletImage, enemyImage, gameOverImage;
+let gameOver = false; // true이면 게임오버
 
 //우주선 좌표
 let spaceshipX = canvas.width / 2 - 45;
@@ -49,6 +50,12 @@ function Enemy() {
   };
   this.update = function () {
     this.y += 3;
+
+    //게임 오버
+    if (this.y >= canvas.height - 64) {
+      gameOver = true;
+      console.log("game over!!!");
+    }
   };
 }
 
@@ -141,9 +148,13 @@ function render() {
 }
 
 function main() {
-  update(); //좌표값 업데이트
-  render(); //렌더
-  requestAnimationFrame(main);
+  if (!gameOver) {
+    update(); //좌표값 업데이트
+    render(); //렌더
+    requestAnimationFrame(main);
+  } else {
+    ctx.drawImage(gameOverImage, 100, 303, 200, 106);
+  }
 }
 
 loadImage();
