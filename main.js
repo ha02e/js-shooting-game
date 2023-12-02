@@ -11,6 +11,7 @@ document.body.appendChild(canvas);
 
 let backgroundImage, spaceshipImage, bulletImage, enemyImage, gameOverImage;
 let gameOver = false; // true이면 게임오버
+let score = 0;
 
 //우주선 좌표
 let spaceshipX = canvas.width / 2 - 45;
@@ -25,11 +26,27 @@ function Bullet() {
   this.init = function () {
     this.x = spaceshipX + 29;
     this.y = spaceshipY - 8;
+    this.alive = true; //false이면 총알 없어짐
 
     bulletList.push(this);
   };
   this.update = function () {
     this.y -= 7;
+  };
+
+  //적군에게 총알이 맞았는지 확인하는 함수
+  this.checkHit = function () {
+    for (let i = 0; i < enemyList.length; i++) {
+      if (
+        this.y <= enemyList[i].y &&
+        this.x >= enemyList[i].x &&
+        this.x <= enemyList[i].x + 70
+      ) {
+        score++;
+        this.alive = false;
+        enemyList.splice(i, 1);
+      }
+    }
   };
 }
 
@@ -126,7 +143,10 @@ function update() {
 
   //총알의 y좌표 업데이트 함수
   for (let i = 0; i < bulletList.length; i++) {
-    bulletList[i].update();
+    if (bulletList[i].alive) {
+      bulletList[i].update();
+      bulletList[i].checkHit();
+    }
   }
 
   for (let i = 0; i < enemyList.length; i++) {
@@ -139,7 +159,9 @@ function render() {
   ctx.drawImage(spaceshipImage, spaceshipX, spaceshipY, 90, 69);
 
   for (let i = 0; i < bulletList.length; i++) {
-    ctx.drawImage(bulletImage, bulletList[i].x, bulletList[i].y);
+    if (bulletList[i].alive) {
+      ctx.drawImage(bulletImage, bulletList[i].x, bulletList[i].y);
+    }
   }
 
   for (let i = 0; i < enemyList.length; i++) {
