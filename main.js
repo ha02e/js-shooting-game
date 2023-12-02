@@ -9,7 +9,6 @@ canvas.height = 700;
 
 document.body.appendChild(canvas);
 
-//이미지 가져와 보여주기
 let backgroundImage, spaceshipImage, bulletImage, enemyImage, gameOverImage;
 
 //우주선 좌표
@@ -30,6 +29,26 @@ function Bullet() {
   };
   this.update = function () {
     this.y -= 7;
+  };
+}
+
+//적군
+function generateRandomValue(min, max) {
+  let randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
+  return randomNum;
+}
+
+let enemyList = [];
+function Enemy() {
+  this.x = 0;
+  this.y = 0;
+  this.init = function () {
+    this.y = 0;
+    this.x = generateRandomValue(0, canvas.width - 80);
+    enemyList.push(this);
+  };
+  this.update = function () {
+    this.y += 3;
   };
 }
 
@@ -74,6 +93,13 @@ function createBullet() {
   console.log("새로운 총알 리스트", bulletList);
 }
 
+function createEnemy() {
+  const interval = setInterval(function () {
+    let e = new Enemy();
+    e.init();
+  }, 1000);
+}
+
 //방향키를 눌렀을 때 우주선 움직임
 function update() {
   if (39 in keysDown) {
@@ -95,6 +121,10 @@ function update() {
   for (let i = 0; i < bulletList.length; i++) {
     bulletList[i].update();
   }
+
+  for (let i = 0; i < enemyList.length; i++) {
+    enemyList[i].update();
+  }
 }
 
 function render() {
@@ -103,6 +133,10 @@ function render() {
 
   for (let i = 0; i < bulletList.length; i++) {
     ctx.drawImage(bulletImage, bulletList[i].x, bulletList[i].y);
+  }
+
+  for (let i = 0; i < enemyList.length; i++) {
+    ctx.drawImage(enemyImage, enemyList[i].x, enemyList[i].y, 70, 64);
   }
 }
 
@@ -114,4 +148,5 @@ function main() {
 
 loadImage();
 setupKeyboardListener();
+createEnemy();
 main();
